@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: myapache
+  name: myapache
+  namespace: demo
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: myapache
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: myapache
+    spec:
+      containers:
+        - image: docker.io/php:apache
+          imagePullPolicy: Always
+          name: myapache
+          ports:
+            - containerPort: 80
+            - containerPort: 443
+          resources: {}
+          volumeMounts:
+            - mountPath: /var/www/html
+              name: apache-start-page-vol
+      restartPolicy: Always
+      volumes:
+        - name: apache-start-page-vol
+          configMap:
+            name: apache-configmap
+            defaultMode: 0744
+status: {}

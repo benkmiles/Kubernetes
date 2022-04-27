@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: myapache-svc
+  name: myapache-svc
+  namespace: demo
+spec:
+  type: LoadBalancer
+  ports:
+    - name: "http"
+      port: 80
+      targetPort: 80
+  selector:
+    app: myapache
+status:
+  loadBalancer: {}

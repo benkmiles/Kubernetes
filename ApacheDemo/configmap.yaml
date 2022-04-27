@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: apache-configmap
+  namespace: demo
+data:
+  index.php : |
+    <html>
+      <body>
+        <h1 style="text-align:center;">Welcome to our Website!</header></h1>
+        <p style="text-align:center">Hostname: <?php echo gethostname(); ?></p>
+      </body>
+    </html>

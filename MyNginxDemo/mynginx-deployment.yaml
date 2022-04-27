@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mynginx
+  name: mynginx
+  namespace: demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mynginx
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mynginx
+    spec:
+      containers:
+        - image: public.ecr.aws/b6i2a6j1/futurecloud:mynginx-latest
+          imagePullPolicy: Always
+          name: mynginx
+          ports:
+            - containerPort: 80
+            - containerPort: 443
+          resources: {}
+      restartPolicy: Always
+status: {}

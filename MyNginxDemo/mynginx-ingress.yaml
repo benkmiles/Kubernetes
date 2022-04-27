@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mynginx-ingress
+  namespace: demo
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - demo.milab.local
+    secretName: mynginx-tls
+  rules:
+  - host: "demo.milab.local"
+    http:
+      paths:
+        - path: "/"
+          pathType: Prefix
+          backend:
+            service:
+              name: mynginx-svc
+              port:
+                number: 80
