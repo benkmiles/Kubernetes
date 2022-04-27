@@ -1,0 +1,4 @@
+*.crt
+*.cer
+*.pb7
+*secret*.yaml
