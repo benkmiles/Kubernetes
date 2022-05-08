@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: oc_web
+  name: oc_web
+  namespace: demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oc_web
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: oc_web
+    spec:
+      containers:
+        - image: docker.io/php:apache
+          imagePullPolicy: IfNotPresent
+          name: oc_web
+          ports:
+            - containerPort: 80
+            - containerPort: 443
+          resources: {}
+      restartPolicy: Always
+status: {}

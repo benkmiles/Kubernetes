@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: oc_db
+  name: oc_db
+  namespace: demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oc_db
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: oc_db
+    spec:
+      containers:
+        - image: docker.io/mariadb
+          imagePullPolicy: IfNotPresent
+          name: oc_db
+          ports:
+            - containerPort: 3309
+          resources: {}
+      restartPolicy: Always
+status: {}

@@ -1,20 +1,17 @@
 apiVersion: v1
 kind: Service
 metadata:
-  annotations:
-    nginx.ingress.kubernetes.io/service-upstream: "true" 
   labels:
-    app: myapache-svc
-  name: myapache-svc
+    app: mynginx-svc
+  name: mynginx-svc
   namespace: demo
 spec:
   type: LoadBalancer
   ports:
     - name: "http"
       port: 80
-      protocol: TCP
       targetPort: 80
   selector:
-    app: myapache
+    app: mynginx
 status:
   loadBalancer: {}

@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: smm-openart-mariadb
+  name: smm-openart-mariadb
+  namespace: opencart
+spec:
+  type: ClusterIP
+  ports:
+    - name: mysql
+      port: 3306
+      protocol: TCP
+      targetPort: mysql
+  selector:
+    app.kubernetes.io/name: mariadb
+status:
+  loadBalancer: {}

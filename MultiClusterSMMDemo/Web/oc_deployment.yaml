@@ -1,0 +1,158 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: smm-opencart
+  name: smm-opencart
+  namespace: opencart
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: smm-opencart
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: smm-opencart
+    spec:
+      containers:
+      - env:
+        - name: BITNAMI_DEBUG
+          value: "false"
+        - name: ALLOW_EMPTY_PASSWORD
+          value: "yes"
+        - name: APACHE_HTTP_PORT_NUMBER
+          value: "8080"
+        - name: APACHE_HTTPS_PORT_NUMBER
+          value: "8443"
+        - name: OPENCART_DATABASE_HOST
+          value: smm-openart-mariadb
+        - name: OPENCART_DATABASE_PORT_NUMBER
+          value: "3306"
+        - name: OPENCART_DATABASE_NAME
+          value: bitnami_opencart
+        - name: OPENCART_DATABASE_USER
+          value: bn_opencart
+        - name: OPENCART_ENABLE_HTTPS
+          value: "yes"
+        - name: OPENCART_DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: mariadb-password
+              name: smm-openart-mariadb
+        - name: OPENCART_SKIP_BOOTSTRAP
+          value: "no"
+        - name: OPENCART_HOST
+          value: demo.milab.local
+        - name: OPENCART_USERNAME
+          value: admin
+        - name: OPENCART_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: opencart-password
+              name: smm-openart-opencart
+        - name: OPENCART_EMAIL
+          value: user@example.com
+        image: docker.io/bitnami/opencart:3.0.3-8-debian-10-r224
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 6
+          httpGet:
+            httpHeaders:
+            - name: Host
+              value: demo.milab.local
+            path: /admin/
+            port: http
+            scheme: HTTP
+          initialDelaySeconds: 120
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        name: smm-openart-opencart
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        - containerPort: 8443
+          name: https
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 6
+          httpGet:
+            httpHeaders:
+            - name: Host
+              value: demo.milab.local
+            path: /admin/
+            port: http
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 3
+        resources:
+          requests:
+            cpu: 300m
+            memory: 512Mi
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1001
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /bitnami/opencart
+          name: opencart-data
+          subPath: opencart
+        - mountPath: /bitnami/opencart_storage
+          name: opencart-data
+          subPath: opencart_storage
+        - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+          name: kube-api-access-w76h9
+          readOnly: true
+      dnsPolicy: ClusterFirst
+      enableServiceLinks: true
+      hostAliases:
+      - hostnames:
+        - status.localhost
+        ip: 127.0.0.1
+      preemptionPolicy: PreemptLowerPriority
+      priority: 0
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext:
+        fsGroup: 1001
+      serviceAccount: default
+      serviceAccountName: default
+      terminationGracePeriodSeconds: 30
+      tolerations:
+      - effect: NoExecute
+        key: node.kubernetes.io/not-ready
+        operator: Exists
+        tolerationSeconds: 300
+      - effect: NoExecute
+        key: node.kubernetes.io/unreachable
+        operator: Exists
+        tolerationSeconds: 300
+      volumes:
+      - name: opencart-data
+        persistentVolumeClaim:
+          claimName: smm-openart-opencart-opencart
+      - name: kube-api-access-w76h9
+        projected:
+          defaultMode: 420
+          sources:
+          - serviceAccountToken:
+              expirationSeconds: 3607
+              path: token
+          - configMap:
+              items:
+              - key: ca.crt
+                path: ca.crt
+              name: kube-root-ca.crt
+          - downwardAPI:
+              items:
+              - fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.namespace
+                path: namespace
